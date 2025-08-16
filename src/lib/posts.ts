@@ -6,23 +6,33 @@ import html from "remark-html";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
-export const getAllPosts = () => {
-  const files = fs.readdirSync(postsDirectory);
+export type PostData = {
+  slug: string;
+  title: string;
+  date: string;
+  contentHtml: string;
+  [key: string]: any;
+};
 
-  const markdownFiles = files.filter((file) => file.endsWith(".md"));
-
-  const posts = markdownFiles.map((filename) => {
-    const filePath = path.join(postsDirectory, filename);
-    const fileContents = fs.readFileSync(filePath, "utf8");
-    const { data } = matter(fileContents);
+export const getSortedPostsData = () => {
+  const fileNames = fs.readdirSync(postsDirectory);
+  const allPostsDate = fileNames.map((filename) => {
+    const slug = filename.replace(/\,md$/, "");
+    const fullPath = path.join(postsDirectory, filename);
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+    const matterResult = matter(fileContents);
 
     return {
-      slug: filename.replace(/\.md$/, ""),
-      ...data,
+      slug,
+      ...(matterResult.data as { title: string; date: string }),
     };
   });
 
-  const sortedPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-  return sortedPosts;
+  return allPostsDate.sort((a, b) => {
+    if (a.date < b.date) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
 };
