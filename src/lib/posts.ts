@@ -17,7 +17,7 @@ export type PostData = {
 export const getSortedPostsData = () => {
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsDate = fileNames.map((filename) => {
-    const slug = filename.replace(/\,md$/, "");
+    const slug = filename.replace(/\.md$/, "");
     const fullPath = path.join(postsDirectory, filename);
     const fileContents = fs.readFileSync(fullPath, "utf8");
     const matterResult = matter(fileContents);
@@ -35,4 +35,33 @@ export const getSortedPostsData = () => {
       return -1;
     }
   });
+};
+
+export const getAllPostsSlugs = () => {
+  const fileNames = fs.readdirSync(postsDirectory);
+  return fileNames.map((fileName) => {
+    return {
+      params: {
+        slug: fileName.replace(/\.md$/, ""),
+      },
+    };
+  });
+};
+
+export const getPostData = async (slug: string): Promise<PostData> => {
+  const fullPath = path.join(postsDirectory, `${slug}.md`);
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  const matterResult = matter(fileContents);
+
+  const processedContent = await remark()
+    .use(html)
+    .process(matterResult.content);
+  const contentHtml = processedContent.toString();
+
+  return {
+    slug,
+    contentHtml,
+    ...(matterResult.data as { title: string; date: string }),
+  };
 };
