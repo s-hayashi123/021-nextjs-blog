@@ -10,6 +10,7 @@ export type PostData = {
   slug: string;
   title: string;
   date: string;
+  author: string;
   contentHtml: string;
   [key: string]: any;
 };
@@ -24,16 +25,17 @@ export const getSortedPostsData = () => {
 
     return {
       slug,
-      ...(matterResult.data as { title: string; date: string }),
+      ...(matterResult.data as { title: string; date: string; author: string }),
     };
   });
 
   return allPostsDate.sort((a, b) => {
-    if (a.date < b.date) {
-      return 1;
-    } else {
-      return -1;
-    }
+    // 日付をDateオブジェクトに変換して比較
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+
+    // 新しい日付順（降順）でソート
+    return dateB.getTime() - dateA.getTime();
   });
 };
 
@@ -62,6 +64,6 @@ export const getPostData = async (slug: string): Promise<PostData> => {
   return {
     slug,
     contentHtml,
-    ...(matterResult.data as { title: string; date: string }),
+    ...(matterResult.data as { title: string; date: string; author: string }),
   };
 };
