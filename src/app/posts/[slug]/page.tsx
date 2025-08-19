@@ -1,12 +1,6 @@
 import { getAllPostsSlugs, getPostData } from "../../../../lib/posts";
 import type { PostData } from "../../../../lib/posts";
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
-
 export async function generateStaticParams() {
   const paths = getAllPostsSlugs();
   return paths.map((path) => path.params);
