@@ -1,18 +1,16 @@
 import { getAllPostsSlugs, getPostData } from "../../../../lib/posts";
 import type { PostData } from "../../../../lib/posts";
 
-export type Props = {
-  params: Promise<{
-    slug: string;
-  }>;
-};
-
 export async function generateStaticParams() {
   const paths = getAllPostsSlugs();
   return paths.map((path) => path.params);
 }
 
-export default async function Post({ params }: { params: { slug: string } }) {
+export default async function Post({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const postData: PostData = await getPostData(slug);
 
