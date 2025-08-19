@@ -11,7 +11,7 @@ export type PostData = {
   title: string;
   date: string;
   contentHtml: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 export function getSortedPostsData() {
